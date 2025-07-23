@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive DALL-E Image Generator</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; line-height: 1.6; background: #f4f4f9; color: #333; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; width: 90%; max-width: 600px; }
+        h1 { color: #1a1a1a; }
+        #prompt-form { display: flex; gap: 10px; margin-bottom: 1rem; }
+        #prompt-input { flex-grow: 1; padding: 0.75rem; border: 1px solid #ddd; border-radius: 4px; font-size: 1rem; }
+        button { background-color: #007bff; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 4px; font-size: 1rem; cursor: pointer; transition: background-color 0.3s; }
+        button:hover { background-color: #0056b3; }
+        #image-container { margin-top: 1.5rem; min-height: 300px; border: 2px dashed #ddd; display: flex; justify-content: center; align-items: center; border-radius: 8px; }
+        #generated-image { max-width: 100%; height: auto; border-radius: 6px; }
+        #loading-spinner { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Interactive DALL-E Image Generator</h1>
+        
+        <form id="prompt-form">
+            <input type="text" id="prompt-input" placeholder="e.g., A cat wearing a wizard hat" required>
+            <button type="submit">Generate</button>
+        </form>
+        
+        <div id="image-container">
+            <p id="placeholder-text">Your generated image will appear here...</p>
+            <img id="generated-image" src="" alt="DALL-E Generated Image" style="display:none;">
+            <p id="loading-spinner">Generating... Please wait. ✨</p>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('prompt-form');
+        const input = document.getElementById('prompt-input');
+        const imageContainer = document.getElementById('image-container');
+        const generatedImage = document.getElementById('generated-image');
+        const placeholderText = document.getElementById('placeholder-text');
+        const loadingSpinner = document.getElementById('loading-spinner');
+
+        // 4. Listen for the form submission
+        form.addEventListener('submit', async function(event) {
+            // 5. Prevent the default page reload
+            event.preventDefault(); 
+            
+            const prompt = input.value;
+            if (!prompt) {
+                alert('Please enter a description.');
+                return;
+            }
+
+            // Show loading state
+            placeholderText.style.display = 'none';
+            generatedImage.style.display = 'none';
+            loadingSpinner.style.display = 'block';
+
+            try {
+                // 6. Send the prompt to the Flask backend using fetch (AJAX)
+                const response = await fetch('/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ prompt: prompt }),
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const data = await response.json();
+                
+                // 7. Update the image source with the URL from the backend
+                if (data.image_url) {
+                    generatedImage.src = data.image_url;
+                    generatedImage.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Failed to get image URL.');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while generating the image.');
+                placeholderText.style.display = 'block'; // Show placeholder again on error
+            } finally {
+                // Hide loading state
+                loadingSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
