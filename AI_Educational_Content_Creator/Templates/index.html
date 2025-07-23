@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduGenie - AI Course Creator</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f2f5; color: #1c1e21; margin: 0; padding: 2rem; display: flex; justify-content: center; }
+        .container { max-width: 800px; width: 100%; background: #fff; padding: 2rem 3rem; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+        header { text-align: center; margin-bottom: 2rem; }
+        header h1 { color: #0056b3; font-size: 2.5rem; }
+        header p { font-size: 1.1rem; color: #606770; }
+        #course-form { display: flex; gap: 1rem; margin-bottom: 2rem; }
+        #course-title { flex-grow: 1; padding: 0.8rem 1rem; font-size: 1rem; border: 1px solid #dddfe2; border-radius: 6px; }
+        button { background-color: #007bff; color: white; border: none; padding: 0.8rem 1.5rem; font-size: 1rem; border-radius: 6px; cursor: pointer; font-weight: bold; transition: background-color 0.3s, transform 0.1s; }
+        button:hover { background-color: #0056b3; }
+        button:active { transform: scale(0.98); }
+        .results-container h2 { color: #0056b3; border-bottom: 2px solid #e7f3ff; padding-bottom: 0.5rem; margin-top: 2rem; }
+        .results-container p, .results-container ul { line-height: 1.7; font-size: 1rem; }
+        ul { list-style-type: disc; padding-left: 20px; }
+        li { margin-bottom: 0.5rem; }
+        #loader { display: none; text-align: center; padding: 2rem; font-size: 1.2rem; color: #606770; }
+        #results { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EduGenie 🧞</h1>
+            <p>Your AI-Powered Educational Content Creator</p>
+        </header>
+
+        <form id="course-form">
+            <input type="text" id="course-title" placeholder="Enter a course title (e.g., 'Introduction to Astrophysics')" required>
+            <button type="submit">Generate Content</button>
+        </form>
+
+        <div id="loader">Generating your course plan... Please wait.</div>
+
+        <div id="results" class="results-container">
+            <h2 id="courseNameDisplay"></h2>
+            
+            <h2>Course Objective</h2>
+            <p id="objective"></p>
+            
+            <h2>Sample Syllabus</h2>
+            <ul id="syllabus"></ul>
+
+            <h2>Learning Outcomes (Bloom's Taxonomy)</h2>
+            <ul id="learningOutcomes"></ul>
+            
+            <h2>Assessment Methods</h2>
+            <ul id="assessmentMethods"></ul>
+            
+            <h2>Recommended Readings</h2>
+            <ul id="recommendedReadings"></ul>
+        </div>
+    </div>
+
+    <script>
+        const courseForm = document.getElementById('course-form');
+        const courseTitleInput = document.getElementById('course-title');
+        const loader = document.getElementById('loader');
+        const resultsDiv = document.getElementById('results');
+
+        courseForm.addEventListener('submit', async (event) => {
+            event.preventDefault(); // Stop the page from reloading
+            const courseTitle = courseTitleInput.value;
+            if (!courseTitle) return;
+
+            // Show loader and hide previous results
+            loader.style.display = 'block';
+            resultsDiv.style.display = 'none';
+
+            try {
+                // Send the course title to the Flask backend
+                const response = await fetch('/generate-content', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: courseTitle })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || 'An unknown error occurred.');
+                }
+                
+                const data = await response.json();
+                
+                // Populate the page with the AI-generated data
+                displayResults(data, courseTitle);
+
+            } catch (error) {
+                alert(`Error: ${error.message}`);
+            } finally {
+                // Hide loader and show the new results
+                loader.style.display = 'none';
+                resultsDiv.style.display = 'block';
+            }
+        });
+
+        function displayResults(data, title) {
+            // Helper function to populate a list
+            const populateList = (elementId, items) => {
+                const list = document.getElementById(elementId);
+                list.innerHTML = ''; // Clear previous items
+                items.forEach(item => {
+                    const li = document.createElement('li');
+                    li.textContent = item;
+                    list.appendChild(li);
+                });
+            };
+
+            document.getElementById('courseNameDisplay').textContent = `Course Plan for: ${title}`;
+            document.getElementById('objective').textContent = data.objective;
+            
+            populateList('syllabus', data.syllabus);
+            populateList('learningOutcomes', data.learningOutcomes);
+            populateList('assessmentMethods', data.assessmentMethods);
+            populateList('recommendedReadings', data.recommendedReadings);
+        }
+    </script>
+</body>
+</html>
