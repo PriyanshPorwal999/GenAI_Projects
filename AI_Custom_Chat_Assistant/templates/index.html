@@ -1,0 +1,335 @@
+<!-- templates/index.html -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Gemini Chat Assistant</title>
+</head>
+<body>
+  <h1>Ask Gemini</h1>
+  <input type="text" id="userInput" placeholder="Type your message here">
+  <button onclick="sendMessage()">Send</button>
+  <div id="response"></div>
+
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput').value;
+      const responseDiv = document.getElementById('response');
+
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userInput })
+      });
+
+      const data = await res.json();
+      responseDiv.innerText = "Assistant: " + data.reply;
+    }
+  </script>
+</body>
+</html> -->
+
+
+
+
+<!-- templates/index.html -->
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Ask Gemini - Chat Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #7F00FF, #E100FF);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 2.5rem;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-box {
+      background-color: #ffffff;
+      color: #333;
+      border-radius: 12px;
+      padding: 20px;
+      width: 90%;
+      max-width: 800px;
+      margin: 20px 0;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="text"] {
+      width: 70%;
+      padding: 12px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      margin-right: 10px;
+      outline: none;
+    }
+
+    button {
+      padding: 12px 24px;
+      font-size: 1rem;
+      border-radius: 8px;
+      border: none;
+      background-color: #E100FF;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #B100E8;
+    }
+
+    .response-markdown {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .response-markdown h2,
+    .response-markdown h3 {
+      color: #0f0e10;
+    }
+
+    .response-markdown strong {
+      font-weight: bold;
+    }
+
+    .response-markdown em {
+      font-style: italic;
+    }
+
+    .response-markdown ul {
+      padding-left: 20px;
+    }
+
+    .response-markdown li {
+      margin-bottom: 6px;
+    }
+  </style>
+  Include Marked.js for Markdown rendering
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <h1>Ask Gemini</h1>
+
+  <div class="chat-box">
+    <input type="text" id="userInput" placeholder="Type your message here..." />
+    <button onclick="sendMessage()">Send</button>
+    <div id="response" class="response-markdown">OutPut is here: </div>
+  </div>
+<div>
+  <script>
+    async function sendMessage() {
+      const userInput = document.getElementById('userInput').value.trim();
+      const responseDiv = document.getElementById('response');
+
+      if (!userInput) return;
+
+      responseDiv.innerHTML = `<p><em>Thinking...</em></p>`;
+
+      const res = await fetch('/ask', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: userInput })
+      });
+
+      const data = await res.json();
+
+      // Render Markdown
+      responseDiv.innerHTML = marked.parse(data.reply);
+    }
+  </script>
+ </div>
+</body>
+</html> -->
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Ask Gemini - Chat Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #be8eed, #c8a7cb);
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 2.5rem;
+      text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.3);
+    }
+
+    .chat-container {
+      width: 90%;
+      max-width: 800px;
+      margin: 20px 0;
+    }
+
+    .chat-entry {
+      background-color: #847393;
+      color: #333;
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .chat-entry input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      font-size: 1rem;
+      border-radius: 6px;
+      border: 1px solid #372e2e;
+      margin-bottom: 10px;
+      outline: none;
+      background-color: #232f2b;
+      color: #ffffff;
+    }
+
+    .chat-entry button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+      border-radius: 6px;
+      border: none;
+      background-color: #0a0a0a;
+      color: white;
+      cursor: pointer;
+      margin-right: 10px;
+      transition: background-color 0.3s ease;
+    }
+
+    .chat-entry button:hover {
+      background-color: #616161;
+    }
+
+    .response {
+      background-color: #f1f1f1;
+      color: #222;
+      padding: 12px;
+      border-radius: 6px;
+      margin-top: 8px;
+      white-space: pre-wrap;
+    }
+
+    .copy-btn {
+      float: right;
+      background-color: #00B894;
+    }
+
+    .copy-btn:hover {
+      background-color: #00997A;
+    }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <h1>Ask Gemini</h1>
+
+  <div id="chatContainer" class="chat-container">
+    <!-- Chat entries will be appended here -->
+  </div>
+
+  <script>
+    let quitFlag = false;
+
+    function createChatEntry(initialText = '') {
+      const container = document.getElementById('chatContainer');
+
+      const entry = document.createElement('div');
+      entry.className = 'chat-entry';
+
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Type your question here...';
+      input.value = initialText;
+
+      const sendBtn = document.createElement('button');
+      sendBtn.innerText = 'Send';
+      sendBtn.onclick = async () => {
+        const message = input.value.trim();
+        if (!message) return;
+
+        if (message.toLowerCase() === 'quit') {
+          input.disabled = true;
+          sendBtn.disabled = true;
+          return;
+        }
+
+        sendBtn.disabled = true;
+        input.disabled = true;
+
+        const responseDiv = document.createElement('div');
+        responseDiv.className = 'response';
+        responseDiv.innerHTML = `<em>Thinking...</em>`;
+        entry.appendChild(responseDiv);
+
+        try {
+          const res = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: message })
+          });
+
+          const data = await res.json();
+
+          // Format with Markdown
+          responseDiv.innerHTML = marked.parse(data.reply);
+
+          // Add Copy Button
+          const copyBtn = document.createElement('button');
+          copyBtn.className = 'copy-btn';
+          copyBtn.textContent = '📋 Copy';
+          copyBtn.onclick = () => {
+            navigator.clipboard.writeText(responseDiv.textContent);
+          };
+          responseDiv.appendChild(copyBtn);
+
+          // Create next input block
+          if (!quitFlag) {
+            createChatEntry();
+          }
+
+        } catch (error) {
+          responseDiv.innerHTML = `<span style="color:red;">Error: ${error}</span>`;
+        }
+      };
+
+      entry.appendChild(input);
+      entry.appendChild(sendBtn);
+
+      container.appendChild(entry);
+      input.focus();
+    }
+
+    // Start the first chat entry
+    window.onload = () => {
+      createChatEntry();
+    };
+  </script>
+</body>
+</html>
+
+
